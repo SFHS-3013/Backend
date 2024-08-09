@@ -73,6 +73,14 @@ function randomiseDeviceParameters() {
     console.log("randomised!")
 }
 
+function updateDeviceParamsFile() {
+  fs.writeFile("devices.json", JSON.stringify(devicedata), (err) => {
+    if (err) {
+      console.log("ERROR WRITING TO DEVICEDATA");
+    }
+  });
+}
+
 app.get("/devices", (req, res) => {
     randomiseDeviceParameters();
     res.status(200).send(devicedata);
@@ -88,4 +96,18 @@ app.post("/suggestions", async (req, res) => {
         res.status(404).send({ error: "Device not found" });
     }
 
+});
+
+app.post("/newdevice", (req, res) => {
+    if (req.body.auth==process.env.PASSWORD)
+    {
+      const newDevice = req.body.device;
+      devicedata.push(newDevice);
+      updateDeviceParamsFile();
+      res.status(201).send({ message: "Device added", device: newDevice });
+    }
+    else 
+    {
+      res.status(401).send({error: "Incorrect password"})
+    }
 });
