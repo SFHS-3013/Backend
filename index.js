@@ -42,14 +42,34 @@ async function callGPT(inputPrompt) {
 }
 console.log(devicedata[0])
 
-app.get("/devices", (req, res) => {
-    devicedata = JSON.parse(fs.readFileSync("devices.json", "utf8", (err, data) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(data);
+function randomiseDeviceParameters() {
+  for (let i=0; i<devicedata.length; i++)
+    {
+      let device = devicedata[i];
+      if (device.type == "solar") {
+        device.energy_usage = Math.floor(((Math.random() * 0.7) + 0.25 )* device.energy_rating);
+        device.efficiency = parseFloat((device.energy_usage/device.energy_rating).toFixed(2));
+        if(device.efficiency < 0.4)
+        {
+          device.status = "low_power";
         }
-    }));
+        console.log(device)
+      }
+      else if (device.type == "battery")
+      {
+        device.charge_level = device.charge_level - Math.floor(Math.random() * 10)/10;
+        if(device.charge_level < 0.3)
+        {
+          device.status = "low_charge";
+        }
+        console.log(device)
+      }
+    }
+    console.log("randomised!")
+}
+
+app.get("/devices", (req, res) => {
+    randomiseDeviceParameters();
     res.status(200).send(devicedata);
 });
 
