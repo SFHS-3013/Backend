@@ -29,7 +29,12 @@ const client = new OpenAI({
 async function callGPT(inputPrompt) {
     let suggestion = "";
   const chatCompletion = await client.chat.completions.create({
-    messages: [{ role: 'system', content: "You will be given a JSON with info about a city infrastructure. You are to assess said info (efficiency, status etc), and give a rating out of 10. If any errors/anomalies are detected, add a 'suggestion' bit saying what can be improved. Limit responses to 60 words. Systems generating/using power above 60% is ok, and above 90% give a warning against overuse. Format stuff properly: eg make Rating: bold" }
+    messages: [{ role: 'system', 
+      content: `You will be given a JSON object with info about a component of Urban Infrastructure. You are to assess said info (efficiency, status etc), and give a rating out of 10.
+
+If any errors/anomalies are detected, add a 'suggestion' bit saying what can be improved. Systems generating/using power above 40% is ok, and above 90% give a warning against overuse.
+Format stuff properly: eg make 'Rating:' bold.
+Limit responses to 60 words. ` }
         ,{ role: 'user', content: `${inputPrompt}` }],
     model: 'gpt-4o-mini',
   }).then((response) => {
