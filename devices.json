@@ -4,8 +4,8 @@
         "type": "solar",
         "name": "SolarPowerCo_EnergyGenerator",
         "location": "Srinagar",
-        "energy_usage": 475,
-        "energy_rating": 482,
+        "power_production": 475,
+        "power_rating": 482,
         "efficiency": 0.91,
         "status": "ok"
     },
@@ -23,8 +23,8 @@
         "type": "solar",
         "name": "SunEnergy_SolarCell",
         "location": "Udhampur",
-        "energy_usage": 579,
-        "energy_rating": 674,
+        "power_production": 579,
+        "power_rating": 674,
         "efficiency": 0.93,
         "status": "ok"
     },
@@ -33,8 +33,8 @@
         "type": "solar",
         "name": "SolarWorld_PowerStation",
         "location": "Leh",
-        "energy_usage": 308,
-        "energy_rating": 550,
+        "power_production": 308,
+        "power_rating": 550,
         "efficiency": 0.81,
         "status": "ok"
     },

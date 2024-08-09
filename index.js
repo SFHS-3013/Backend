@@ -32,7 +32,7 @@ async function callGPT(inputPrompt) {
     messages: [{ role: 'system', 
       content: `You will be given a JSON object with info about a component of Urban Infrastructure. You are to assess said info (efficiency, status etc), and give a rating out of 10.
 
-If any errors/anomalies are detected, add a 'suggestion' bit saying what can be improved. Systems generating/using power above 40% is ok, and above 90% give a warning against overuse.
+If any errors/anomalies are detected, add a 'suggestion' bit saying what can be improved. Systems generating/using power above 40% is ok, and above 100% give a warning against overuse.
 Format stuff properly: eg make 'Rating:' bold.
 Limit responses to 60 words. ` }
         ,{ role: 'user', content: `${inputPrompt}` }],
@@ -52,8 +52,8 @@ function randomiseDeviceParameters() {
     {
       let device = devicedata[i];
       if (device.type == "solar") {
-        device.energy_usage = Math.floor(((Math.random() * 0.7) + 0.25 )* device.energy_rating);
-        device.efficiency = parseFloat((device.energy_usage/device.energy_rating).toFixed(2));
+        device.power_production = Math.floor(((Math.random() * 0.7) + 0.25 )* device.power_rating);
+        device.efficiency = parseFloat((device.power_production/device.power_rating).toFixed(2));
         if(device.efficiency < 0.4)
         {
           device.status = "low_power";
