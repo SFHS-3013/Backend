@@ -8,6 +8,7 @@ app.use(cors());
 app.use(express.json())
 const showdown = require('showdown');
 const converter = new showdown.Converter();
+const utils = require("./utils")
 
 require("dotenv").config();
 let devicedata = JSON.parse(fs.readFileSync("devices.json", "utf8", (err, data) => {
@@ -21,6 +22,11 @@ app.listen(3069, () => {
 });
 
 
+let auditLog = JSON.parse(fs.readFileSync("audit-log.json", "utf8", (err, data) => {
+  if (err) {
+      console.log("ERROR LOADING AUDIT-LOG INITIALLY");
+  }
+}));
 
 const client = new OpenAI({
   apiKey: process.env['API_KEY'], 
@@ -81,6 +87,17 @@ function updateDeviceParamsFile() {
   });
 }
 
+function addToAuditLog(action){
+  auditLog.push(action);
+  fs.writeFileSync("audit-log.json", JSON.stringify(auditLog), (err) => {
+    if (err) {
+      console.log("Error updating AuditLog file");
+    }
+  });
+}
+
+
+
 app.get("/devices", (req, res) => {
     randomiseDeviceParameters();
     res.status(200).send(devicedata);
@@ -105,9 +122,48 @@ app.post("/newdevice", (req, res) => {
       devicedata.push(newDevice);
       updateDeviceParamsFile();
       res.status(201).send({ message: "Device added", device: newDevice });
+      addToAuditLog({
+        user: req.body.user,
+        action: "Add new device",
+        details: `New Device added: ${newDevice.id}`, 
+        time: utils.prettyTime()
+      })
     }
     else 
     {
       res.status(401).send({error: "Incorrect password"})
+      addToAuditLog({
+        user: req.body.user,
+        action: "FAIL - Add new device",
+        details: "Incorrect password", 
+        time: utils.prettyTime()
+      })
     }
+});
+
+
+app.post("/setdevicestatus", (req, res) => {
+  if (req.body.auth==process.env.PASSWORD)
+  {
+    const device = devicedata.find(device => device.id == req.body.deviceID);
+    if (device) {
+      device.status = req.body.status;
+      updateDeviceParamsFile();
+      res.status(200).send({ message: "Device status updated", device: device });
+      addToAuditLog({
+        user: req.body.user,
+        action: `Updated device status to ${req.body.status}`,
+        details: `Device ${device.id} status updated to ${devic.status}`, 
+        time: utils.prettyTime()
+      })
+    } else {
+      res.status(404).send({ error: "Device not found" });
+      addToAuditLog({
+        user: req.body.user,
+        action: "FAIL - Updated device status",
+        details: `Device ${req.body.id} not found`, 
+        time: utils.prettyTime()
+      });
+    }
+  }
 });
