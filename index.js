@@ -167,3 +167,15 @@ app.post("/setdevicestatus", (req, res) => {
     }
   }
 });
+
+app.get("/auditlog", (req, res) => {
+  if (req.body.auth == process.env.PASSWORD)
+  {
+    res.status(200).send(auditLog);
+  }
+  else
+  {
+    res.status(401).send({error: "Incorrect password"});
+  }
+  
+});
