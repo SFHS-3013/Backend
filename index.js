@@ -60,13 +60,13 @@ function randomiseDeviceParameters() {
       if (device.type == "solar") {
         device.power_production = Math.floor(((Math.random() * 0.6) + 0.37 )* device.power_rating);
         device.efficiency = parseFloat((device.power_production/device.power_rating).toFixed(2));
-        if(device.efficiency < 0.4)
+        if(device.efficiency < 0.4 && device.status != "off")
         {
           device.status = "low_power";
         }
-        if(device.efficience >= 0.4)
+        if(device.efficiency >= 0.4 && device.status != "off")
         {
-          device.status = "normal";
+          device.status = "ok";
         }
         console.log(device)
       }
