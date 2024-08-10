@@ -36,7 +36,7 @@ async function callGPT(inputPrompt) {
     messages: [{ role: 'system', 
       content: `You will be given a JSON object with info about a component of Urban Infrastructure. You are to assess said info (efficiency, status etc), and give a rating out of 10.
 
-If any errors/anomalies are detected, add a 'suggestion' bit saying what can be improved. Systems generating/using power above 40% is ok, and above 100% give a warning against overuse.
+If any errors/anomalies are detected, add a 'AI suggestion' bit saying what can be improved. Systems generating/using power above 40% is ok.
 Format stuff properly: eg make 'Rating:' bold.
 Limit responses to 60 words. ` }
         ,{ role: 'user', content: `${inputPrompt}` }],
