@@ -174,7 +174,7 @@ app.post("/setdevicestatus", (req, res) => {
 });
 
 app.get("/auditlog", (req, res) => {
-  if (req.body.auth == process.env.PASSWORD)
+  if(req.headers.auth==process.env.PASSWORD)
   {
     res.status(200).send(auditLog);
   }
