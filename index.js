@@ -161,7 +161,7 @@ app.post("/setdevicestatus", (req, res) => {
       addToAuditLog({
         user: req.body.user,
         action: `Updated device status to ${req.body.status}`,
-        details: `Device ${device.id} status updated to ${devic.status}`, 
+        details: `Device ${device.id} status updated to ${device.status}`, 
         time: utils.prettyTime()
       })
     } else {
