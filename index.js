@@ -10,21 +10,21 @@ const showdown = require('showdown');
 const converter = new showdown.Converter();
 const utils = require("./utils")
 const { Database } = require("quickmongo");
-const db = new Database(process.env.MONGO);
 
-db.on("ready", () => {
-  console.log("Database connected!");
-});
 
 require("dotenv").config();
+const db = new Database(process.env.MONGO);
+let auditLog;
+db.on("ready", async () => {
+  console.log("Database connected!");
+  auditLog = await db.get("auditlog")
+
+});
 let devicedata = db.get("devicedata");
 
 app.listen(3069, () => {
   console.log("Server running on port 3069");
 });
-
-
-let auditLog = db.get("auditlog")
 
 const client = new OpenAI({
   apiKey: process.env['API_KEY'], 
@@ -80,19 +80,19 @@ function randomiseDeviceParameters() {
     //console.log("randomised!")
 }
 
-function updateDeviceParamsFile() {
-  db.set("devicedata", devicedata);
+async function updateDeviceParamsFile() {
+  await db.set("devicedata", devicedata);
 }
 
-function addToAuditLog(action){
+async function addToAuditLog(action){
   auditLog.push(action);
-  db.set("auditlog", auditLog);
+  await db.set("auditlog", auditLog);
 }
 
 
 
-app.get("/devices", (req, res) => {
-      devicedata = db.get("devicedata");
+app.get("/devices", async (req, res) => {
+    devicedata = await db.get("devicedata");
     randomiseDeviceParameters();
     res.status(200).send(devicedata);
 });
@@ -109,14 +109,14 @@ app.post("/suggestions", async (req, res) => {
 
 });
 
-app.post("/newdevice", (req, res) => {
+app.post("/newdevice", async (req, res) => {
     if (req.body.auth==process.env.PASSWORD)
     {
       const newDevice = req.body.device;
       devicedata.push(newDevice);
-      updateDeviceParamsFile();
+      await updateDeviceParamsFile();
       res.status(201).send({ message: "Device added", device: newDevice });
-      addToAuditLog({
+      await addToAuditLog({
         user: req.body.user,
         action: "Add new device",
         details: `New Device added: ${newDevice.id}`, 
@@ -126,7 +126,7 @@ app.post("/newdevice", (req, res) => {
     else 
     {
       res.status(401).send({error: "Incorrect password"})
-      addToAuditLog({
+      await addToAuditLog({
         user: req.body.user,
         action: "FAIL - Add new device",
         details: "Incorrect password", 
@@ -136,15 +136,15 @@ app.post("/newdevice", (req, res) => {
 });
 
 
-app.post("/setdevicestatus", (req, res) => {
+app.post("/setdevicestatus", async (req, res) => {
   if (req.body.auth==process.env.PASSWORD)
   {
     const device = devicedata.find(device => device.id == req.body.deviceID);
     if (device) {
       device.status = req.body.status;
-      updateDeviceParamsFile();
+      await updateDeviceParamsFile();
       res.status(200).send({ message: "Device status updated", device: device });
-      addToAuditLog({
+      await addToAuditLog({
         user: req.body.user,
         action: `Updated device status to ${req.body.status}`,
         details: `Device ${device.id} status updated to ${device.status}`, 
@@ -152,7 +152,7 @@ app.post("/setdevicestatus", (req, res) => {
       })
     } else {
       res.status(404).send({ error: "Device not found" });
-      addToAuditLog({
+      await addToAuditLog({
         user: req.body.user,
         action: "FAIL - Updated device status",
         details: `Device ${req.body.id} not found`, 
