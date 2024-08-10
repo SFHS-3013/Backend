@@ -9,24 +9,22 @@ app.use(express.json())
 const showdown = require('showdown');
 const converter = new showdown.Converter();
 const utils = require("./utils")
+const { Database } = require("quickmongo");
+const db = new Database(process.env.MONGO);
+
+db.on("ready", () => {
+  console.log("Database connected!");
+});
 
 require("dotenv").config();
-let devicedata = JSON.parse(fs.readFileSync("devices.json", "utf8", (err, data) => {
-    if (err) {
-        console.log("ERROR LOADING DEVICEDATA INITIALLY");
-    }
-}));
+let devicedata = db.get("devicedata");
 
 app.listen(3069, () => {
   console.log("Server running on port 3069");
 });
 
 
-let auditLog = JSON.parse(fs.readFileSync("audit-log.json", "utf8", (err, data) => {
-  if (err) {
-      console.log("ERROR LOADING AUDIT-LOG INITIALLY");
-  }
-}));
+let auditLog = db.get("auditlog")
 
 const client = new OpenAI({
   apiKey: process.env['API_KEY'], 
@@ -83,30 +81,18 @@ function randomiseDeviceParameters() {
 }
 
 function updateDeviceParamsFile() {
-  fs.writeFile("devices.json", JSON.stringify(devicedata), (err) => {
-    if (err) {
-      console.log("ERROR WRITING TO DEVICEDATA");
-    }
-  });
+  db.set("devicedata", devicedata);
 }
 
 function addToAuditLog(action){
   auditLog.push(action);
-  fs.writeFileSync("audit-log.json", JSON.stringify(auditLog), (err) => {
-    if (err) {
-      console.log("Error updating AuditLog file");
-    }
-  });
+  db.set("auditlog", auditLog);
 }
 
 
 
 app.get("/devices", (req, res) => {
-      devicedata = JSON.parse(fs.readFileSync("devices.json", "utf8", (err, data) => {
-        if (err) {
-            console.log("ERROR Loading Devicedata ON REQUEST");
-        }
-    }));
+      devicedata = db.get("devicedata");
     randomiseDeviceParameters();
     res.status(200).send(devicedata);
 });

@@ -4,6 +4,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "openai": "^4.55.3",
+    "quickmongo": "^3.0.2",
     "showdown": "^2.1.0"
   }
 }
