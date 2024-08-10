@@ -10,7 +10,7 @@ const showdown = require('showdown');
 const converter = new showdown.Converter();
 const utils = require("./utils")
 const { Database } = require("quickmongo");
-
+const serverless = require("serverless-http");
 
 require("dotenv").config();
 const db = new Database(process.env.MONGO);
@@ -173,3 +173,5 @@ app.get("/auditlog", (req, res) => {
   }
   
 });
+
+module.exports.handler = serverless(app);
