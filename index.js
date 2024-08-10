@@ -58,7 +58,7 @@ function randomiseDeviceParameters() {
     {
       let device = devicedata[i];
       if (device.type == "solar") {
-        device.power_production = Math.floor(((Math.random() * 0.7) + 0.25 )* device.power_rating);
+        device.power_production = Math.floor(((Math.random() * 0.6) + 0.37 )* device.power_rating);
         device.efficiency = parseFloat((device.power_production/device.power_rating).toFixed(2));
         if(device.efficiency < 0.4)
         {
