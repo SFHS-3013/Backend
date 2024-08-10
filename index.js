@@ -68,8 +68,8 @@ function randomiseDeviceParameters() {
       }
       else if (device.type == "battery")
       {
-        device.charge_level = device.charge_level - Math.floor(Math.random() * 10)/10;
-        if(device.charge_level < 0.3)
+        device.charge_level = device.charge_level - Math.floor(Math.random() * 5);
+        if(device.charge_level < 30)
         {
           device.status = "low_charge";
         }
