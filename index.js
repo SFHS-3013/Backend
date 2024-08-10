@@ -99,6 +99,11 @@ function addToAuditLog(action){
 
 
 app.get("/devices", (req, res) => {
+      devicedata = JSON.parse(fs.readFileSync("devices.json", "utf8", (err, data) => {
+        if (err) {
+            console.log("ERROR Loading Devicedata ON REQUEST");
+        }
+    }));
     randomiseDeviceParameters();
     res.status(200).send(devicedata);
 });
