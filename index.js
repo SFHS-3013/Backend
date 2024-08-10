@@ -64,6 +64,10 @@ function randomiseDeviceParameters() {
         {
           device.status = "low_power";
         }
+        if(device.efficience >= 0.4)
+        {
+          device.status = "normal";
+        }
         console.log(device)
       }
       else if (device.type == "battery")
