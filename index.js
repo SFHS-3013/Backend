@@ -45,13 +45,12 @@ Limit responses to 60 words. ` }
     model: 'gpt-4o-mini',
   }).then((response) => {
     suggestion = response.choices[0].message.content;
-    console.log(suggestion);
+    //console.log(suggestion);
   }).catch((error) => {
     console.log(error);
   });
   return converter.makeHtml(suggestion);
 }
-console.log(devicedata[0])
 
 function randomiseDeviceParameters() {
   for (let i=0; i<devicedata.length; i++)
@@ -68,7 +67,7 @@ function randomiseDeviceParameters() {
         {
           device.status = "ok";
         }
-        console.log(device)
+        //console.log(device)
       }
       else if (device.type == "battery")
       {
@@ -80,7 +79,7 @@ function randomiseDeviceParameters() {
         console.log(device)
       }
     }
-    console.log("randomised!")
+    //console.log("randomised!")
 }
 
 function updateDeviceParamsFile() {
